@@ -127,6 +127,7 @@ Player.propTypes = {
 	name: React.PropTypes.string.isRequired,
 	score: React.PropTypes.number.isRequired,
 	onScoreChange: React.PropTypes.func.isRequired,
+	onRemove: React.PropTypes.func.isRequired,
 };
 
 var Application = React.createClass({
@@ -152,13 +153,11 @@ var Application = React.createClass({
 	},
 
 	onScoreChange: function(index, delta){
-		console.log('onScoreChange', index, delta);
 		this.state.players[index].score += delta;
 		this.setState(this.state);
 	},
 
 	onPlayerAdd: function(name) {
-		console.log('Player added', name)
 		this.state.players.push({
 			name: name,
 			score: 0,
@@ -166,6 +165,11 @@ var Application = React.createClass({
 		});
 		this.setState(this.state);
 		nextId += 1;
+	},
+
+	onRemovePlayer(index) {
+		this.state.players.splice(index,1);
+		this.setState(this.state);
 	},
 
 	// classes need the render method
@@ -178,11 +182,13 @@ var Application = React.createClass({
 					{this.state.players.map(function(player, index){
 						return (
 							<Player 
-								onScoreChange={function (delta) {this.onScoreChange(index,delta) }.bind(this)}
-								name={player.name} 
-								score={player.score} 
-								key={player.id} />
-							);
+								onScoreChange={ function (delta) {this.onScoreChange(index,delta) }.bind(this)}
+								onRemove={ function() {this.onRemovePlayer(index)}.bind(this) }
+								name={ player.name } 
+								score={ player.score } 
+								key={ player.id}  
+							/>
+						);
 					}.bind(this))}
 				</div>
 				<AddPlayerForm onAdd={this.onPlayerAdd} />
